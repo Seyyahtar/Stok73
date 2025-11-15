@@ -1,4 +1,6 @@
+using System;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Maui.Graphics;
@@ -83,7 +85,13 @@ public partial class MainPageViewModel : ObservableObject
             return;
         }
 
-        // Şimdilik sayfalar hazır olmadığı için kullanıcıyı bilgilendiriyoruz.
+        if (string.Equals(item.Route, "stock", StringComparison.OrdinalIgnoreCase))
+        {
+            await Shell.Current.GoToAsync(item.Route);
+            return;
+        }
+
+        // Şimdilik diğer sayfalar hazır olmadığı için kullanıcıyı bilgilendiriyoruz.
         await Shell.Current.DisplayAlert("Bilgi", $"{item.Title} sayfası yakında eklenecek.", "Tamam");
     }
 }

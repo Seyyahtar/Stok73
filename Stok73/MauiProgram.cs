@@ -1,6 +1,7 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using Stok73.Pages;
+using Stok73.ViewModels;
 
 namespace Stok73;
 
@@ -26,6 +27,8 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<MainPageViewModel>();
         builder.Services.AddSingleton<MainPage>();
+        builder.Services.AddTransient<StockPageViewModel>();
+        builder.Services.AddTransient<StockPage>();
 
         return builder.Build();
     }
