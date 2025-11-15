@@ -44,8 +44,10 @@
             <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
                 <Border BackgroundColor="White"
                         StrokeThickness="0"
-                        StrokeShape="RoundRectangle 18"
                         Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="18" />
+                    </Border.StrokeShape>
                     <VerticalStackLayout Spacing="4">
                         <Label Text="{Binding TotalQuantity}"
                                Style="{StaticResource SummaryValueStyle}" />
@@ -56,8 +58,10 @@
                 <Border Grid.Column="1"
                         BackgroundColor="White"
                         StrokeThickness="0"
-                        StrokeShape="RoundRectangle 18"
                         Padding="16">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="18" />
+                    </Border.StrokeShape>
                     <VerticalStackLayout Spacing="4">
                         <Label Text="{Binding DistinctMaterialCount}"
                                Style="{StaticResource SummaryValueStyle}" />
@@ -69,14 +73,18 @@
 
             <Border BackgroundColor="White"
                     StrokeThickness="0"
-                    StrokeShape="RoundRectangle 18"
                     Padding="16">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
                 <Grid ColumnDefinitions="Auto,*" ColumnSpacing="16">
                     <Border WidthRequest="48"
                             HeightRequest="48"
                             BackgroundColor="#2563EB"
-                            StrokeThickness="0"
-                            StrokeShape="Circle">
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <Ellipse />
+                        </Border.StrokeShape>
                         <Label Text="&#xF1B9;"
                                FontFamily="{x:Static fonts:FluentUI.FontFamily}"
                                FontSize="24"
@@ -100,8 +108,7 @@
                        Text="{Binding SearchText}"
                        BackgroundColor="White"
                        FontSize="14"
-                       Margin="0,4,0,0"
-                       Keyboard="Search" />
+                       Margin="0,4,0,0" />
 
             <VerticalStackLayout Spacing="8">
                 <Label Text="Filtreler"
@@ -121,10 +128,12 @@
                                     Padding="12,8"
                                     StrokeThickness="1"
                                     Stroke="{Binding StrokeColor}"
-                                    BackgroundColor="{Binding BackgroundColor}"
-                                    StrokeShape="RoundRectangle 20">
+                                    BackgroundColor="{Binding BackgroundColor}">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="20" />
+                                </Border.StrokeShape>
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:StockPageViewModel}}, Path=ToggleFilterCommand}"
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleFilterCommand}"
                                                           CommandParameter="{Binding .}" />
                                 </Border.GestureRecognizers>
                                 <HorizontalStackLayout Spacing="8"
@@ -134,8 +143,11 @@
                                             HeightRequest="8"
                                             BackgroundColor="{Binding IndicatorColor}"
                                             StrokeThickness="0"
-                                            StrokeShape="Circle"
-                                            VerticalOptions="Center" />
+                                            VerticalOptions="Center">
+                                        <Border.StrokeShape>
+                                            <Ellipse />
+                                        </Border.StrokeShape>
+                                    </Border>
                                     <Label x:Name="FilterLabel"
                                            Text="{Binding Label}"
                                            FontSize="13"
@@ -163,9 +175,11 @@
                     <DataTemplate x:DataType="models:StockGroup">
                         <Border StrokeThickness="0"
                                 BackgroundColor="White"
-                                StrokeShape="RoundRectangle 22"
                                 Padding="20"
                                 Margin="0,0,0,12">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="22" />
+                            </Border.StrokeShape>
                             <VerticalStackLayout Spacing="16">
                                 <Grid ColumnDefinitions="*,Auto">
                                     <Label Text="{Binding Title}"
@@ -184,8 +198,10 @@
                                         <DataTemplate x:DataType="models:StockItem">
                                             <Border StrokeThickness="1"
                                                     Stroke="#E2E8F0"
-                                                    StrokeShape="RoundRectangle 16"
                                                     Padding="12">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="16" />
+                                                </Border.StrokeShape>
                                                 <Grid ColumnDefinitions="*,Auto"
                                                       RowDefinitions="Auto,Auto,Auto"
                                                       ColumnSpacing="12">
@@ -195,8 +211,10 @@
                                                     <Border Grid.Column="1"
                                                             BackgroundColor="#DBEAFE"
                                                             StrokeThickness="0"
-                                                            StrokeShape="RoundRectangle 12"
                                                             Padding="8,4">
+                                                        <Border.StrokeShape>
+                                                            <RoundRectangle CornerRadius="12" />
+                                                        </Border.StrokeShape>
                                                         <Label Text="{Binding Quantity}"
                                                                FontSize="13"
                                                                TextColor="#1D4ED8"
@@ -235,13 +253,15 @@
 
             <Border StrokeThickness="0"
                     BackgroundColor="White"
-                    StrokeShape="RoundRectangle 18"
                     Padding="24"
                     IsVisible="{Binding IsEmpty}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18" />
+                </Border.StrokeShape>
                 <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                     <Label Text="Kayıt bulunamadı"
                            FontAttributes="Bold"
-                           TextColor="{Binding TextColor}" />
+                           TextColor="#0F172A" />
                     <Label Text="Aramanızı veya filtrelerinizi güncelleyerek tekrar deneyin."
                            FontSize="13"
                            TextColor="#64748B"
