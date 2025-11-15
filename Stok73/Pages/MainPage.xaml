@@ -1,89 +1,113 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:pageModels="clr-namespace:Stok73.PageModels"             
+             xmlns:viewModels="clr-namespace:Stok73.ViewModels"
              xmlns:models="clr-namespace:Stok73.Models"
-             xmlns:controls="clr-namespace:Stok73.Pages.Controls"
-             xmlns:pullToRefresh="clr-namespace:Syncfusion.Maui.Toolkit.PullToRefresh;assembly=Syncfusion.Maui.Toolkit"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:fonts="clr-namespace:Fonts"
              x:Class="Stok73.Pages.MainPage"
-             x:DataType="pageModels:MainPageModel"
-             x:Name="OverviewPage"
-             Title="{Binding Today}">
-
-    <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior
-                BindingContext="{Binding Path=BindingContext, Source={x:Reference OverviewPage}, x:DataType=ContentPage}"
-                EventName="NavigatedTo"
-                Command="{Binding NavigatedToCommand}" />
-        <toolkit:EventToCommandBehavior
-                BindingContext="{Binding Path=BindingContext, Source={x:Reference OverviewPage}, x:DataType=ContentPage}"
-                EventName="NavigatedFrom"
-                Command="{Binding NavigatedFromCommand}" />
-        <toolkit:EventToCommandBehavior
-                BindingContext="{Binding Path=BindingContext, Source={x:Reference OverviewPage}, x:DataType=ContentPage}"
-                EventName="Appearing"                
-                Command="{Binding AppearingCommand}" />
-    </ContentPage.Behaviors>
-
+             x:DataType="viewModels:MainPageViewModel"
+             Title="Ana Sayfa">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <DataTemplate x:Key="PrimaryMenuTemplate" x:DataType="models:HomeMenuItem">
+                <Border StrokeThickness="0"
+                        BackgroundColor="White"
+                        StrokeShape="RoundRectangle 20">
+                    <Grid Padding="16" RowSpacing="12" ColumnSpacing="0">
+                        <Border HeightRequest="56"
+                                WidthRequest="56"
+                                BackgroundColor="{Binding AccentColor}"
+                                StrokeThickness="0"
+                                StrokeShape="Circle">
+                            <Label Text="{Binding Glyph}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="White"
+                                   FontFamily="{x:Static fonts:FluentUI.FontFamily}"
+                                   FontSize="28" />
+                        </Border>
+                        <Label Grid.Row="1"
+                               Text="{Binding Title}"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"
+                               HorizontalTextAlignment="Center"
+                               FontSize="16" />
+                    </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}, Path=OpenMenuCommand}"
+                                              CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </DataTemplate>
+
+            <DataTemplate x:Key="SecondaryMenuTemplate" x:DataType="models:HomeMenuItem">
+                <Border StrokeThickness="0"
+                        BackgroundColor="White"
+                        StrokeShape="RoundRectangle 20">
+                    <Grid Padding="16" ColumnSpacing="16">
+                        <Border HeightRequest="56"
+                                WidthRequest="56"
+                                BackgroundColor="{Binding AccentColor}"
+                                StrokeThickness="0"
+                                StrokeShape="Circle">
+                            <Label Text="{Binding Glyph}"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="White"
+                                   FontFamily="{x:Static fonts:FluentUI.FontFamily}"
+                                   FontSize="28" />
+                        </Border>
+                        <Label Grid.Column="1"
+                               VerticalOptions="Center"
+                               Text="{Binding Title}"
+                               FontAttributes="Bold"
+                               TextColor="#1F2937"
+                               FontSize="16" />
+                    </Grid>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewModels:MainPageViewModel}}, Path=OpenMenuCommand}"
+                                              CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </DataTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid>
-        <pullToRefresh:SfPullToRefresh
-            IsRefreshing="{Binding IsRefreshing}"
-            RefreshCommand="{Binding RefreshCommand}">
-            <pullToRefresh:SfPullToRefresh.PullableContent>
-                <ScrollView>
-                    <VerticalStackLayout Spacing="{StaticResource LayoutSpacing}" Padding="{StaticResource LayoutPadding}">
-                        <controls:CategoryChart />
-                        <Label Text="Projects" Style="{StaticResource Title2}"/>
-                        <ScrollView Orientation="Horizontal" Margin="-30,0">
-                            <HorizontalStackLayout 
-                                Spacing="15" Padding="30,0"
-                                BindableLayout.ItemsSource="{Binding Projects}">
-                                <BindableLayout.ItemTemplate>
-                                    <DataTemplate x:DataType="models:Project">
-                                        <controls:ProjectCardView WidthRequest="200">
-                                            <controls:ProjectCardView.GestureRecognizers>
-                                                <TapGestureRecognizer Command="{Binding NavigateToProjectCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}" CommandParameter="{Binding .}"/>
-                                            </controls:ProjectCardView.GestureRecognizers>
-                                        </controls:ProjectCardView>
-                                    </DataTemplate>
-                                </BindableLayout.ItemTemplate>
-                            </HorizontalStackLayout>
-                        </ScrollView>
-                        <Grid HeightRequest="44">
-                            <Label Text="Tasks" Style="{StaticResource Title2}" VerticalOptions="Center"/>
-                            <ImageButton 
-                                Source="{StaticResource IconClean}"
-                                HorizontalOptions="End"
-                                VerticalOptions="Center"
-                                Aspect="Center"
-                                HeightRequest="44"
-                                WidthRequest="44"
-                                IsVisible="{Binding HasCompletedTasks}"
-                                Command="{Binding CleanTasksCommand}"
-                                SemanticProperties.Description="Clean tasks" />
-                        </Grid>
-                        <VerticalStackLayout Spacing="15"
-                            BindableLayout.ItemsSource="{Binding Tasks}">
-                            <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <controls:TaskView TaskCompletedCommand="{Binding TaskCompletedCommand, Source={RelativeSource AncestorType={x:Type pageModels:MainPageModel}}, x:DataType=pageModels:MainPageModel}" />
-                                </DataTemplate>
-                            </BindableLayout.ItemTemplate>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
-                </ScrollView>
-            </pullToRefresh:SfPullToRefresh.PullableContent>
-        </pullToRefresh:SfPullToRefresh>
+    <ContentPage.Background>
+        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#EFF6FF" Offset="0" />
+            <GradientStop Color="#E0E7FF" Offset="1" />
+        </LinearGradientBrush>
+    </ContentPage.Background>
 
-        <controls:AddButton 
-            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
-            Command="{Binding AddTaskCommand}" />
-    </Grid>
+    <ScrollView>
+        <VerticalStackLayout Padding="24,64,24,24" Spacing="24">
+            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                <Label Text="Medikal Envanter Yönetimi"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="#1E293B"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Hoş Geldiniz, {Binding CurrentUser}"
+                       FontSize="16"
+                       TextColor="#475569"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <CollectionView ItemsSource="{Binding PrimaryMenuItems}"
+                            SelectionMode="None"
+                            ItemTemplate="{StaticResource PrimaryMenuTemplate}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" VerticalItemSpacing="16" HorizontalItemSpacing="16" />
+                </CollectionView.ItemsLayout>
+            </CollectionView>
+
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding SecondaryMenuItems}"
+                                 Spacing="16">
+                <BindableLayout.ItemTemplate>
+                    <StaticResource ResourceKey="SecondaryMenuTemplate" />
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
