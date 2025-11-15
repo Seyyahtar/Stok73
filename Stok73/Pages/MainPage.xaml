@@ -105,7 +105,7 @@
             <VerticalStackLayout BindableLayout.ItemsSource="{Binding SecondaryMenuItems}"
                                  Spacing="16">
                 <BindableLayout.ItemTemplate>
-                    <StaticResource ResourceKey="SecondaryMenuTemplate" />
+                    <StaticResource Key="SecondaryMenuTemplate" />
                 </BindableLayout.ItemTemplate>
             </VerticalStackLayout>
         </VerticalStackLayout>
