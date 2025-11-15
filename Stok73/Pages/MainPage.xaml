@@ -11,14 +11,18 @@
         <ResourceDictionary>
             <DataTemplate x:Key="PrimaryMenuTemplate" x:DataType="models:HomeMenuItem">
                 <Border StrokeThickness="0"
-                        BackgroundColor="White"
-                        StrokeShape="RoundRectangle 20">
+                        BackgroundColor="White">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
                     <Grid Padding="16" RowSpacing="12" ColumnSpacing="0">
                         <Border HeightRequest="56"
                                 WidthRequest="56"
                                 BackgroundColor="{Binding AccentColor}"
-                                StrokeThickness="0"
-                                StrokeShape="Circle">
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <Ellipse />
+                            </Border.StrokeShape>
                             <Label Text="{Binding Glyph}"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
@@ -42,14 +46,18 @@
 
             <DataTemplate x:Key="SecondaryMenuTemplate" x:DataType="models:HomeMenuItem">
                 <Border StrokeThickness="0"
-                        BackgroundColor="White"
-                        StrokeShape="RoundRectangle 20">
+                        BackgroundColor="White">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
                     <Grid Padding="16" ColumnSpacing="16">
                         <Border HeightRequest="56"
                                 WidthRequest="56"
                                 BackgroundColor="{Binding AccentColor}"
-                                StrokeThickness="0"
-                                StrokeShape="Circle">
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <Ellipse />
+                            </Border.StrokeShape>
                             <Label Text="{Binding Glyph}"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center"
