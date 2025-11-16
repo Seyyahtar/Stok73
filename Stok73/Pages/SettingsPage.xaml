@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Stok73.Pages.SettingsPage"
+             Title="Ayarlar"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="Padding" Value="16" />
+                <Setter Property="Margin" Value="0,0,0,12" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,16,16,24" Spacing="16" BackgroundColor="#F8FAFC">
+            <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,0,0,8" VerticalOptions="Center">
+                <Border HeightRequest="40" WidthRequest="40" BackgroundColor="#1F2937" StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <Ellipse />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateBackCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="&#x2190;" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontSize="16" />
+                </Border>
+                <Label Grid.Column="1" Text="Ayarlar" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="White" />
+            </Grid>
+
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Veri İstatistikleri" FontAttributes="Bold" FontSize="16" TextColor="#0F172A" />
+                    <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+                        <Label Text="Stok Kalemleri:" TextColor="#475569" />
+                        <Label Grid.Column="1" Text="178" TextColor="#0F172A" FontAttributes="Bold" />
+
+                        <Label Grid.Row="1" Text="Vaka Kayıtları:" TextColor="#475569" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="1" TextColor="#0F172A" FontAttributes="Bold" />
+
+                        <Label Grid.Row="2" Text="Geçmiş Kayıtları:" TextColor="#475569" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="5" TextColor="#0F172A" FontAttributes="Bold" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Veri Yönetimi" FontAttributes="Bold" FontSize="16" TextColor="#0F172A" />
+                    <Button Text="🗑  Stok Kayıtlarını Temizle" BackgroundColor="#FFF7ED" TextColor="#EA580C" BorderColor="#F97316" BorderWidth="1" CornerRadius="10" />
+                    <Label Text="Tüm stok kayıtlarını siler (178 kayıt)" FontSize="12" TextColor="#6B7280" />
+
+                    <Button Text="🗑  Geçmiş Kayıtlarını Temizle" BackgroundColor="#FEFCE8" TextColor="#CA8A04" BorderColor="#FACC15" BorderWidth="1" CornerRadius="10" />
+                    <Label Text="Tüm geçmiş kayıtlarını siler (5 kayıt)" FontSize="12" TextColor="#6B7280" />
+
+                    <Button Text="🗑  Tüm Verileri Temizle" BackgroundColor="#DC2626" TextColor="White" CornerRadius="10" />
+                    <Label Text="Tüm stok, vaka, geçmiş ve kullanıcı verilerini siler" FontSize="12" TextColor="#6B7280" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}" BackgroundColor="#F1F5F9">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Not" FontAttributes="Bold" FontSize="16" TextColor="#0F172A" />
+                    <Label Text="Verileriniz tarayıcınızın yerel depolama alanında saklanmaktadır. Tarayıcı verilerini temizlerseniz tüm kayıtlarınız silinecektir." TextColor="#475569" FontSize="13" />
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

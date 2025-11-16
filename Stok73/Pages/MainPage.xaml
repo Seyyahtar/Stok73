@@ -1,80 +1,30 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:Stok73.ViewModels"
              xmlns:models="clr-namespace:Stok73.Models"
-             xmlns:fonts="clr-namespace:Fonts"
              x:Class="Stok73.Pages.MainPage"
              x:DataType="viewModels:MainPageViewModel"
-             Title="Ana Sayfa">
+             Title="Ana Sayfa"
+             Shell.NavBarIsVisible="False">
     <ContentPage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="PrimaryMenuTemplate" x:DataType="models:HomeMenuItem">
-                <Border StrokeThickness="0"
-                        BackgroundColor="White">
+                <Border StrokeThickness="0" BackgroundColor="White">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="20" />
                     </Border.StrokeShape>
                     <Grid Padding="16" RowSpacing="12" ColumnSpacing="0">
-                        <Border HeightRequest="56"
-                                WidthRequest="56"
-                                BackgroundColor="{Binding AccentColor}"
-                                StrokeThickness="0">
+                        <Border HeightRequest="56" WidthRequest="56" BackgroundColor="{Binding AccentColor}" StrokeThickness="0">
                             <Border.StrokeShape>
                                 <Ellipse />
                             </Border.StrokeShape>
-                            <Label Text="{Binding Glyph}"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   TextColor="White"
-                                   FontFamily="{x:Static fonts:FluentUI.FontFamily}"
-                                   FontSize="28" />
+                            <Image Source="{Binding Glyph}" HeightRequest="28" WidthRequest="28" HorizontalOptions="Center" VerticalOptions="Center" />
                         </Border>
-                        <Label Grid.Row="1"
-                               Text="{Binding Title}"
-                               FontAttributes="Bold"
-                               TextColor="#1F2937"
-                               HorizontalTextAlignment="Center"
-                               FontSize="16" />
+                        <Label Grid.Row="1" Text="{Binding Title}" FontAttributes="Bold" TextColor="#1F2937" HorizontalTextAlignment="Center" FontSize="16" />
                     </Grid>
                     <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMenuCommand}"
-                                              CommandParameter="{Binding .}" />
-                    </Border.GestureRecognizers>
-                </Border>
-            </DataTemplate>
-
-            <DataTemplate x:Key="SecondaryMenuTemplate" x:DataType="models:HomeMenuItem">
-                <Border StrokeThickness="0"
-                        BackgroundColor="White">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="20" />
-                    </Border.StrokeShape>
-                    <Grid Padding="16" ColumnSpacing="16">
-                        <Border HeightRequest="56"
-                                WidthRequest="56"
-                                BackgroundColor="{Binding AccentColor}"
-                                StrokeThickness="0">
-                            <Border.StrokeShape>
-                                <Ellipse />
-                            </Border.StrokeShape>
-                            <Label Text="{Binding Glyph}"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"
-                                   TextColor="White"
-                                   FontFamily="{x:Static fonts:FluentUI.FontFamily}"
-                                   FontSize="28" />
-                        </Border>
-                        <Label Grid.Column="1"
-                               VerticalOptions="Center"
-                               Text="{Binding Title}"
-                               FontAttributes="Bold"
-                               TextColor="#1F2937"
-                               FontSize="16" />
-                    </Grid>
-                    <Border.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMenuCommand}"
-                                              CommandParameter="{Binding .}" />
+                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.OpenMenuCommand}" CommandParameter="{Binding .}" />
                     </Border.GestureRecognizers>
                 </Border>
             </DataTemplate>
@@ -91,31 +41,15 @@
     <ScrollView>
         <VerticalStackLayout Padding="24,64,24,24" Spacing="24">
             <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
-                <Label Text="Medikal Envanter Yönetimi"
-                       FontSize="24"
-                       FontAttributes="Bold"
-                       TextColor="#1E293B"
-                       HorizontalTextAlignment="Center" />
-                <Label Text="Hoş Geldiniz, {Binding CurrentUser}"
-                       FontSize="16"
-                       TextColor="#475569"
-                       HorizontalTextAlignment="Center" />
+                <Label Text="Medikal Envanter Yönetimi" FontSize="24" FontAttributes="Bold" TextColor="#1E293B" HorizontalTextAlignment="Center" />
+                <Label Text="Hoş Geldiniz, {Binding CurrentUser}" FontSize="16" TextColor="#475569" HorizontalTextAlignment="Center" />
             </VerticalStackLayout>
 
-            <CollectionView ItemsSource="{Binding PrimaryMenuItems}"
-                            SelectionMode="None"
-                            ItemTemplate="{StaticResource PrimaryMenuTemplate}">
+            <CollectionView ItemsSource="{Binding PrimaryMenuItems}" SelectionMode="None" ItemTemplate="{StaticResource PrimaryMenuTemplate}">
                 <CollectionView.ItemsLayout>
                     <GridItemsLayout Orientation="Vertical" Span="2" VerticalItemSpacing="16" HorizontalItemSpacing="16" />
                 </CollectionView.ItemsLayout>
             </CollectionView>
-
-            <VerticalStackLayout BindableLayout.ItemsSource="{Binding SecondaryMenuItems}"
-                                 Spacing="16">
-                <BindableLayout.ItemTemplate>
-                    <StaticResource Key="SecondaryMenuTemplate" />
-                </BindableLayout.ItemTemplate>
-            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

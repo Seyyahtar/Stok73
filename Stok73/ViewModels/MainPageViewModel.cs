@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,14 +13,13 @@ public partial class MainPageViewModel : ObservableObject
     private readonly IReadOnlyDictionary<string, string> _defaultRoutes = new Dictionary<string, string>
     {
         ["stock"] = "stock",
-        ["case-entry"] = "case-entry",
+        ["case-entry"] = "case",
         ["checklist"] = "checklist",
         ["history"] = "history",
         ["settings"] = "settings",
     };
 
     public ObservableCollection<HomeMenuItem> PrimaryMenuItems { get; } = new();
-    public ObservableCollection<HomeMenuItem> SecondaryMenuItems { get; } = new();
 
     [ObservableProperty]
     private string currentUser = "Dr. Demir";
@@ -33,40 +32,39 @@ public partial class MainPageViewModel : ObservableObject
     private void InitializeMenuItems()
     {
         PrimaryMenuItems.Clear();
-        SecondaryMenuItems.Clear();
 
         PrimaryMenuItems.Add(new HomeMenuItem(
             "stock",
             "Stok",
-            Fonts.FluentUI.cube_24_regular,
+            "lucide_package.svg",
             Color.FromArgb("#3B82F6"),
             _defaultRoutes["stock"]));
 
         PrimaryMenuItems.Add(new HomeMenuItem(
             "case-entry",
-            "Vaka",
-            Fonts.FluentUI.clipboard_24_regular,
+            "Vaka Girişi",
+            "lucide_file_text.svg",
             Color.FromArgb("#22C55E"),
             _defaultRoutes["case-entry"]));
 
         PrimaryMenuItems.Add(new HomeMenuItem(
             "checklist",
             "Kontrol Listesi",
-            Fonts.FluentUI.checkmark_circle_24_regular,
+            "lucide_clipboard_check.svg",
             Color.FromArgb("#A855F7"),
             _defaultRoutes["checklist"]));
 
         PrimaryMenuItems.Add(new HomeMenuItem(
             "history",
             "Geçmiş",
-            Fonts.FluentUI.history_24_regular,
+            "lucide_history.svg",
             Color.FromArgb("#F97316"),
             _defaultRoutes["history"]));
 
-        SecondaryMenuItems.Add(new HomeMenuItem(
+        PrimaryMenuItems.Add(new HomeMenuItem(
             "settings",
             "Ayarlar",
-            Fonts.FluentUI.settings_24_regular,
+            "lucide_settings.svg",
             Color.FromArgb("#6B7280"),
             _defaultRoutes["settings"]));
     }
@@ -79,19 +77,12 @@ public partial class MainPageViewModel : ObservableObject
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(item.Route))
-        {
-            await Shell.Current.DisplayAlert("Bilgi", $"{item.Title} sayfası yakında eklenecek.", "Tamam");
-            return;
-        }
-
-        if (string.Equals(item.Route, "stock", StringComparison.OrdinalIgnoreCase))
+        if (!string.IsNullOrWhiteSpace(item.Route))
         {
             await Shell.Current.GoToAsync(item.Route);
             return;
         }
 
-        // Şimdilik diğer sayfalar hazır olmadığı için kullanıcıyı bilgilendiriyoruz.
         await Shell.Current.DisplayAlert("Bilgi", $"{item.Title} sayfası yakında eklenecek.", "Tamam");
     }
 }

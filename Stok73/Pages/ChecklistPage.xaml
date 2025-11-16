@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Stok73.Pages.ChecklistPage"
+             Title="Kontrol Listesi"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="Padding" Value="20" />
+                <Setter Property="Margin" Value="16" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="18" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*" BackgroundColor="#F5F3FF">
+        <Grid ColumnDefinitions="Auto,*,Auto" Padding="12" BackgroundColor="#9333EA" >
+            <Border HeightRequest="40" WidthRequest="40" BackgroundColor="White" StrokeThickness="0">
+                <Border.StrokeShape>
+                    <Ellipse />
+                </Border.StrokeShape>
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavigateBackCommand}" />
+                </Border.GestureRecognizers>
+                <Label Text="&#x2190;" HorizontalOptions="Center" VerticalOptions="Center" TextColor="#9333EA" FontSize="16" />
+            </Border>
+            <Label Grid.Column="1" Text="Kontrol Listesi" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="White" />
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="0,24" Spacing="16">
+                <Border Style="{StaticResource CardStyle}">
+                    <VerticalStackLayout Spacing="14" HorizontalOptions="Center" >
+                        <Border HeightRequest="72" WidthRequest="72" BackgroundColor="#F3E8FF" StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <Ellipse />
+                            </Border.StrokeShape>
+                            <Label Text="&#x2B06;" FontSize="28" TextColor="#9333EA" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="Kontrol Listesi Yükle" FontAttributes="Bold" FontSize="18" TextColor="#111827" HorizontalTextAlignment="Center" />
+                        <Label Text="Excel dosyanızdan hasta listesini içe aktarın" FontSize="14" TextColor="#6B7280" HorizontalTextAlignment="Center" />
+                        <Button Text="⬆  Excel Dosyası Seç" BackgroundColor="#9333EA" TextColor="White" CornerRadius="12" Padding="14,10" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

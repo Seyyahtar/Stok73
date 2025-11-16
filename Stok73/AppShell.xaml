@@ -10,4 +10,20 @@
         Title="Ana Sayfa"
         ContentTemplate="{DataTemplate pages:MainPage}"
         Route="home" />
+    <ShellContent
+        Title="Vaka"
+        ContentTemplate="{DataTemplate pages:CasePage}"
+        Route="case" />
+    <ShellContent
+        Title="Geçmiş"
+        ContentTemplate="{DataTemplate pages:HistoryPage}"
+        Route="history" />
+    <ShellContent
+        Title="Kontrol"
+        ContentTemplate="{DataTemplate pages:ChecklistPage}"
+        Route="checklist" />
+    <ShellContent
+        Title="Ayarlar"
+        ContentTemplate="{DataTemplate pages:SettingsPage}"
+        Route="settings" />
 </Shell>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Stok73.ViewModels"
+             xmlns:models="clr-namespace:Stok73.Models"
+             x:Class="Stok73.Pages.CasePage"
+             x:DataType="viewModels:CasePageViewModel"
+             Title="Vaka"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="Margin" Value="0,0,0,12" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            <Style x:Key="InputEntryStyle" TargetType="Entry">
+                <Setter Property="HeightRequest" Value="44" />
+                <Setter Property="BackgroundColor" Value="#F2F4F7" />
+                <Setter Property="TextColor" Value="#0F172A" />
+                <Setter Property="PlaceholderColor" Value="#94A3B8" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,24" Spacing="16" BackgroundColor="#F8FAFC">
+            <Grid ColumnDefinitions="Auto,*,Auto" Padding="0,0,0,8">
+                <Border HeightRequest="40" WidthRequest="40" BackgroundColor="#22C55E" HorizontalOptions="Start" VerticalOptions="Center">
+                    <Border.StrokeShape>
+                        <Ellipse />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateBackCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="&#x2190;" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontSize="16" />
+                </Border>
+                <Label Grid.Column="1" Text="Vaka" VerticalOptions="Center" FontAttributes="Bold" FontSize="18" TextColor="White" />
+            </Grid>
+
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Tarih *" FontAttributes="Bold" TextColor="#0F172A" />
+                        <DatePicker Date="{Binding SelectedDate}" TextColor="#0F172A" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Hastane Adı *" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Entry Style="{StaticResource InputEntryStyle}" Placeholder="Hastane adı" Text="{Binding HospitalName}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Doktor Adı *" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Entry Style="{StaticResource InputEntryStyle}" Placeholder="Doktor adı" Text="{Binding DoctorName}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Hasta Adı *" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Entry Style="{StaticResource InputEntryStyle}" Placeholder="Hasta adı" Text="{Binding PatientName}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Not" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Editor Placeholder="Not (opsiyonel)" BackgroundColor="#F2F4F7" Text="{Binding Note}" AutoSize="TextChanges" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Style="{StaticResource CardStyle}">
+                <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+                    <Label Text="Kullanılan Malzemeler" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Button Grid.Column="1" Text="+ Ekle" Command="{Binding AddMaterialCommand}" Style="{StaticResource InlineButtonStyle}" />
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding Materials}" SelectionMode="None">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:CaseMaterialEntry">
+                            <Border StrokeThickness="1" Stroke="#E2E8F0" BackgroundColor="White" Padding="12">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14" />
+                                </Border.StrokeShape>
+                                <VerticalStackLayout Spacing="10">
+                                    <Grid ColumnDefinitions="*,Auto" Padding="0,0,0,4">
+                                        <Label Text="Malzeme" FontAttributes="Bold" TextColor="#0F172A" />
+                                        <Button Grid.Column="1" Text="Sil" TextColor="#DC2626" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveMaterialCommand}" CommandParameter="{Binding .}" Style="{StaticResource InlineButtonStyle}" />
+                                    </Grid>
+                                    <Entry Style="{StaticResource InputEntryStyle}" Placeholder="Malzeme Adı *" Text="{Binding Name}" />
+                                    <Entry Style="{StaticResource InputEntryStyle}" Placeholder="Seri/Lot Numarası *" Text="{Binding SerialLotNumber}" />
+                                    <Entry Style="{StaticResource InputEntryStyle}" Placeholder="UBB Kodu" Text="{Binding UbbCode}" />
+                                    <Entry Style="{StaticResource InputEntryStyle}" Placeholder="Miktar *" Keyboard="Numeric" Text="{Binding Quantity}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Border>
+
+            <Button Text="Vakayı Kaydet" Command="{Binding SaveCommand}" BackgroundColor="#111827" TextColor="White" Padding="14" CornerRadius="12" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

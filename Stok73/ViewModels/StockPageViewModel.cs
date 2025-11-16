@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -36,7 +36,7 @@ public partial class StockPageViewModel : ObservableObject
     private int distinctMaterialCount;
 
     [ObservableProperty]
-    private string nextExpiryDisplay = "Tanımlı değil";
+    private string nextExpiryDisplay = "Tan\u0131ml\u0131 de\u011fil";
 
     [ObservableProperty]
     private bool hasResults;
@@ -164,12 +164,13 @@ public partial class StockPageViewModel : ObservableObject
     {
         IsMenuVisible = false;
 
-        if (Shell.Current is null)
+        var shell = Shell.Current;
+        if (shell is null)
         {
             return;
         }
 
-        await Shell.Current.DisplayAlert("Bilgi", "Stok yönetimi ekranı henüz hazır değil.", "Tamam");
+        await shell.DisplayAlert("Bilgi", "Stok y\u00f6netimi ekran\u0131 hen\u00fcz haz\u0131r de\u011fil.", "Tamam");
     }
 
     [RelayCommand]
@@ -181,7 +182,11 @@ public partial class StockPageViewModel : ObservableObject
         {
             if (_allItems.Count == 0)
             {
-                await Shell.Current?.DisplayAlert("Bilgi", "Dışa aktarılacak stok bulunamadı.", "Tamam");
+                var shell = Shell.Current;
+                if (shell is not null)
+                {
+                    await shell.DisplayAlert("Bilgi", "D\u0131\u015fa aktar\u0131lacak stok bulunamad\u0131.", "Tamam");
+                }
                 return;
             }
 
@@ -200,11 +205,19 @@ public partial class StockPageViewModel : ObservableObject
 
             workbook.SaveAs(exportPath);
 
-            await Shell.Current?.DisplayAlert("Bilgi", $"Excel dosyası {exportPath} konumuna kaydedildi.", "Tamam");
+            var shellAfterExport = Shell.Current;
+            if (shellAfterExport is not null)
+            {
+                await shellAfterExport.DisplayAlert("Bilgi", $"Excel dosyas\u0131 {exportPath} konumuna kaydedildi.", "Tamam");
+            }
         }
         catch (Exception ex)
         {
-            await Shell.Current?.DisplayAlert("Hata", $"Excel'e aktarılamadı: {ex.Message}", "Tamam");
+            var shellOnError = Shell.Current;
+            if (shellOnError is not null)
+            {
+                await shellOnError.DisplayAlert("Hata", $"Excel'e aktar\u0131lamad\u0131: {ex.Message}", "Tamam");
+            }
         }
     }
 
@@ -213,20 +226,52 @@ public partial class StockPageViewModel : ObservableObject
     {
         IsMenuVisible = false;
 
-        await LoadStockFromExcelAsync(showAlerts: true);
+        try
+        {
+            var pickOptions = new PickOptions
+            {
+                PickerTitle = "Stok Excel dosyas\u0131n\u0131 se\u00e7in",
+                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.Android, new[] { "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel" } },
+                    { DevicePlatform.iOS, new[] { "org.openxmlformats.spreadsheetml.sheet", "com.microsoft.excel.xls" } },
+                    { DevicePlatform.WinUI, new[] { ".xlsx", ".xls" } },
+                    { DevicePlatform.MacCatalyst, new[] { "org.openxmlformats.spreadsheetml.sheet", "com.microsoft.excel.xls" } }
+                })
+            };
+
+            var pickResult = await FilePicker.Default.PickAsync(pickOptions);
+
+            if (pickResult is null)
+            {
+                return;
+            }
+
+            await using var stream = await pickResult.OpenReadAsync();
+            await LoadStockFromExcelAsync(showAlerts: true, overrideStream: stream, sourceName: pickResult.FileName);
+        }
+        catch (Exception ex)
+        {
+            var shell = Shell.Current;
+            if (shell is not null)
+            {
+                await shell.DisplayAlert("Hata", $"Excel se\u00e7ilirken hata olu\u015ftu: {ex.Message}", "Tamam");
+            }
+        }
     }
 
-    private async Task<bool> LoadStockFromExcelAsync(bool showAlerts)
+    private async Task<bool> LoadStockFromExcelAsync(bool showAlerts, Stream? overrideStream = null, string? sourceName = null)
     {
         try
         {
-            await using var stream = await TryOpenExcelStreamAsync();
+            await using var stream = overrideStream ?? await TryOpenExcelStreamAsync();
 
             if (stream is null)
             {
-                if (showAlerts && Shell.Current is not null)
+                var shell = Shell.Current;
+                if (showAlerts && shell is not null)
                 {
-                    await Shell.Current.DisplayAlert("Bilgi", "stok.xlsx dosyası bulunamadı. Lütfen dosyayı Resimler klasörüne ekleyin.", "Tamam");
+                    await shell.DisplayAlert("Bilgi", "stok.xlsx dosyas\u0131 bulunamad\u0131. L\u00fctfen dosyay\u0131 Resimler klas\u00f6r\u00fcne ekleyin.", "Tamam");
                 }
 
                 return false;
@@ -237,9 +282,10 @@ public partial class StockPageViewModel : ObservableObject
 
             if (worksheet is null)
             {
-                if (showAlerts && Shell.Current is not null)
+                var shell = Shell.Current;
+                if (showAlerts && shell is not null)
                 {
-                    await Shell.Current.DisplayAlert("Hata", "Excel sayfası okunamadı.", "Tamam");
+                    await shell.DisplayAlert("Hata", "Excel sayfas\u0131 okunamad\u0131.", "Tamam");
                 }
 
                 return false;
@@ -249,9 +295,10 @@ public partial class StockPageViewModel : ObservableObject
 
             if (importedItems.Count == 0)
             {
-                if (showAlerts && Shell.Current is not null)
+                var shell = Shell.Current;
+                if (showAlerts && shell is not null)
                 {
-                    await Shell.Current.DisplayAlert("Bilgi", "Excel dosyasında aktarılabilir satır bulunamadı.", "Tamam");
+                    await shell.DisplayAlert("Bilgi", "Excel dosyas\u0131nda aktar\u0131labilir sat\u0131r bulunamad\u0131.", "Tamam");
                 }
 
                 return false;
@@ -259,27 +306,31 @@ public partial class StockPageViewModel : ObservableObject
 
             ReplaceItems(importedItems);
 
-            if (showAlerts && Shell.Current is not null)
+            var shellAfterImport = Shell.Current;
+            if (showAlerts && shellAfterImport is not null)
             {
-                await Shell.Current.DisplayAlert("Bilgi", $"{importedItems.Count} satır stok listesine aktarıldı.", "Tamam");
+                var origin = string.IsNullOrWhiteSpace(sourceName) ? "stok.xlsx" : sourceName;
+                await shellAfterImport.DisplayAlert("Bilgi", $"{importedItems.Count} sat\u0131r {origin} dosyas\u0131ndan stok listesine aktar\u0131ld\u0131.", "Tamam");
             }
 
             return true;
         }
         catch (InvalidDataException ex)
         {
-            if (showAlerts && Shell.Current is not null)
+            var shell = Shell.Current;
+            if (showAlerts && shell is not null)
             {
-                await Shell.Current.DisplayAlert("Hata", ex.Message, "Tamam");
+                await shell.DisplayAlert("Hata", ex.Message, "Tamam");
             }
 
             return false;
         }
         catch (Exception ex)
         {
-            if (showAlerts && Shell.Current is not null)
+            var shell = Shell.Current;
+            if (showAlerts && shell is not null)
             {
-                await Shell.Current.DisplayAlert("Hata", $"Excel içe aktarma hatası: {ex.Message}", "Tamam");
+                await shell.DisplayAlert("Hata", $"Excel i\u00e7e aktarma hatas\u0131: {ex.Message}", "Tamam");
             }
 
             return false;
@@ -291,12 +342,13 @@ public partial class StockPageViewModel : ObservableObject
     {
         IsMenuVisible = false;
 
-        if (Shell.Current is null)
+        var shell = Shell.Current;
+        if (shell is null)
         {
             return;
         }
 
-        await Shell.Current.DisplayAlert("Bilgi", "Geçmiş ekranı yakında eklenecek.", "Tamam");
+        await shell.DisplayAlert("Bilgi", "Ge\u00e7mi\u015f ekran\u0131 yak\u0131nda eklenecek.", "Tamam");
     }
 
     [RelayCommand]
@@ -307,7 +359,11 @@ public partial class StockPageViewModel : ObservableObject
             return;
         }
 
-        await Shell.Current?.DisplayAlert("Bilgi", $"{item.MaterialName} stoktan çıkarılacak modülü yakında eklenecek.", "Tamam");
+        var shell = Shell.Current;
+        if (shell is not null)
+        {
+            await shell.DisplayAlert("Bilgi", $"{item.MaterialName} stoktan \u00e7\u0131kar\u0131lacak mod\u00fcl\u00fc yak\u0131nda eklenecek.", "Tamam");
+        }
     }
 
     [RelayCommand]
@@ -318,7 +374,11 @@ public partial class StockPageViewModel : ObservableObject
             return;
         }
 
-        await Shell.Current?.DisplayAlert("Bilgi", $"{item.MaterialName} kaydı silme özelliği yakında eklenecek.", "Tamam");
+        var shell = Shell.Current;
+        if (shell is not null)
+        {
+            await shell.DisplayAlert("Bilgi", $"{item.MaterialName} kayd\u0131 silme \u00f6zelli\u011fi yak\u0131nda eklenecek.", "Tamam");
+        }
     }
 
     [RelayCommand]
@@ -329,7 +389,11 @@ public partial class StockPageViewModel : ObservableObject
             return;
         }
 
-        await Shell.Current?.DisplayAlert("Bilgi", $"{item.MaterialName} düzenleme ekranı üzerinde çalışıyoruz.", "Tamam");
+        var shell = Shell.Current;
+        if (shell is not null)
+        {
+            await shell.DisplayAlert("Bilgi", $"{item.MaterialName} d\u00fczenleme ekran\u0131 \u00fczerinde \u00e7al\u0131\u015f\u0131yoruz.", "Tamam");
+        }
     }
 
     private void LoadFilters()
@@ -388,7 +452,7 @@ public partial class StockPageViewModel : ObservableObject
                         .ToList();
 
                     var firstItem = orderedItems.First();
-                    var subtitle = $"{firstItem.CategoryName} • {firstItem.Manufacturer}";
+                    var subtitle = $"{firstItem.CategoryName} / {firstItem.Manufacturer}";
 
                     return new StockMaterialGroup(materialGroup.Key, subtitle, orderedItems);
                 })
@@ -410,7 +474,7 @@ public partial class StockPageViewModel : ObservableObject
         }
         else
         {
-            NextExpiryDisplay = "Tanımlı değil";
+            NextExpiryDisplay = "Tan\u0131ml\u0131 de\u011fil";
         }
 
         UpdateDeviceSummaries(filtered);
@@ -434,7 +498,7 @@ public partial class StockPageViewModel : ObservableObject
 
         if (!headers.ContainsKey("materialname"))
         {
-            throw new InvalidDataException("Excel dosyasında MaterialName sütunu bulunamadı.");
+            throw new InvalidDataException("Excel dosyas\u0131nda MaterialName s\u00fctunu bulunamad\u0131.");
         }
 
         var importedItems = new List<StockItem>();
@@ -455,7 +519,7 @@ public partial class StockPageViewModel : ObservableObject
             var location = GetCellValue(row, headers, "location", "Depo");
             var categoryKey = GetCellValue(row, headers, "categorykey", "lead");
             var categoryName = GetCellValue(row, headers, "categoryname", "Kategori");
-            var manufacturer = GetCellValue(row, headers, "manufacturer", "Üretici");
+            var manufacturer = GetCellValue(row, headers, "manufacturer", "\u00dcretici");
 
             importedItems.Add(new StockItem(Guid.NewGuid().ToString(), materialName, serial, ubb, expiry, quantity, location, categoryKey, categoryName, manufacturer));
         }
@@ -497,8 +561,8 @@ public partial class StockPageViewModel : ObservableObject
         var crtTotal = items.Where(IsCrt).Sum(item => item.Quantity);
 
         DeviceSummaries.Add(new DeviceCategorySummary("Pacemaker", "Amvia Sky, Endicos, Enitra, Edora", pacemakerTotal, Color.FromArgb("#DBEAFE"), Color.FromArgb("#1D4ED8")));
-        DeviceSummaries.Add(new DeviceCategorySummary("ICD", "VR-T ve DR-T cihazları", icdTotal, Color.FromArgb("#DCFCE7"), Color.FromArgb("#15803D")));
-        DeviceSummaries.Add(new DeviceCategorySummary("CRT", "HF-T cihazları", crtTotal, Color.FromArgb("#F3E8FF"), Color.FromArgb("#7C3AED")));
+        DeviceSummaries.Add(new DeviceCategorySummary("ICD", "VR-T ve DR-T cihazlar\u0131", icdTotal, Color.FromArgb("#DCFCE7"), Color.FromArgb("#15803D")));
+        DeviceSummaries.Add(new DeviceCategorySummary("CRT", "HF-T cihazlar\u0131", crtTotal, Color.FromArgb("#F3E8FF"), Color.FromArgb("#7C3AED")));
     }
 
     private static bool IsPacemaker(StockItem item)
@@ -657,3 +721,7 @@ public partial class StockPageViewModel : ObservableObject
         }
     }
 }
+
+
+
+

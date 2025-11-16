@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": ".NET MAUI (Pixel 9)",
+      "type": "maui",
+      "request": "launch",
+      "preLaunchTask": "maui: Build",
+      "args": [
+        "-f",
+        "net9.0-android",
+        "-p:_DeviceName=Pixel_9"
+      ],
+      "console": "integratedTerminal"
+    }
+  ]
+}

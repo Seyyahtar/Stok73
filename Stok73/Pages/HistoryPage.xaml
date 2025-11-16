@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewModels="clr-namespace:Stok73.ViewModels"
+             xmlns:models="clr-namespace:Stok73.Models"
+             x:Class="Stok73.Pages.HistoryPage"
+             x:DataType="viewModels:HistoryPageViewModel"
+             Title="Geçmiş"
+             Shell.NavBarIsVisible="False">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="CardStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="Padding" Value="14" />
+                <Setter Property="Margin" Value="0,0,0,12" />
+                <Setter Property="StrokeShape">
+                    <Setter.Value>
+                        <RoundRectangle CornerRadius="16" />
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="16,16,16,24" Spacing="16" BackgroundColor="#F5F3FF">
+            <!-- Header -->
+            <Grid ColumnDefinitions="Auto,*" Padding="0,0,0,8" VerticalOptions="Center">
+                <Border HeightRequest="40" WidthRequest="40" BackgroundColor="#8B5CF6" StrokeThickness="0">
+                    <Border.StrokeShape>
+                        <Ellipse />
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding NavigateBackCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="&#x2190;" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White" FontSize="16" />
+                </Border>
+                <Label Grid.Column="1" Text="Geçmiş" FontAttributes="Bold" FontSize="18" VerticalOptions="Center" TextColor="White" />
+            </Grid>
+
+            <!-- Filters -->
+            <Border Style="{StaticResource CardStyle}">
+                <VerticalStackLayout Spacing="12">
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="İşlem Tipi" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Picker ItemsSource="{Binding Source={x:Reference ActionTypes}}" SelectedItem="{Binding SelectedType}" />
+                    </VerticalStackLayout>
+                    <Picker x:Name="ActionTypes" IsVisible="False">
+                        <Picker.Items>
+                            <x:String>Tümü</x:String>
+                            <x:String>Vaka</x:String>
+                            <x:String>Kontrol Listesi</x:String>
+                            <x:String>Stok Silme</x:String>
+                        </Picker.Items>
+                    </Picker>
+
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Başlangıç Tarihi" FontAttributes="Bold" TextColor="#0F172A" />
+                        <DatePicker Date="{Binding StartDate}" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Spacing="4">
+                        <Label Text="Bitiş Tarihi" FontAttributes="Bold" TextColor="#0F172A" />
+                        <DatePicker Date="{Binding EndDate}" />
+                    </VerticalStackLayout>
+                    <Button Text="Filtreleri Temizle" Command="{Binding ClearFiltersCommand}" BackgroundColor="White" BorderColor="#E2E8F0" BorderWidth="1" TextColor="#1D4ED8" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- History list -->
+            <CollectionView ItemsSource="{Binding Items}" SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:HistoryItem">
+                        <Border Style="{StaticResource CardStyle}">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                                    <Border BackgroundColor="{Binding BadgeColor}" StrokeThickness="0" Padding="10,4">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="12" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding Type}" TextColor="{Binding BadgeTextColor}" />
+                                    </Border>
+                                    <Label Grid.Column="1" Text="{Binding Date, StringFormat='{0:dd.MM.yyyy}'}" FontSize="12" TextColor="#64748B" VerticalOptions="Center" />
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                        <Button Text="↺" FontSize="12" BackgroundColor="#EEF2FF" Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ClearFiltersCommand}" />
+                                        <Button Text="👁" FontSize="12" BackgroundColor="#EEF2FF" />
+                                    </HorizontalStackLayout>
+                                </Grid>
+                                <Label Text="{Binding Title}" FontAttributes="Bold" TextColor="#0F172A" />
+                                <Label Text="{Binding Detail}" TextColor="#475569" FontSize="13" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
