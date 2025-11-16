@@ -407,32 +407,34 @@
                                                             </Border.StrokeShape>
                                                             <VerticalStackLayout Spacing="12"
                                                                                  BindableLayout.ItemsSource="{Binding Items}">
-                                                                <!-- HeaderTemplate yerine ilk öğe olarak başlık ekleniyor -->
-                                                                <Grid ColumnDefinitions="2*,*,*,Auto"
-                                                                      ColumnSpacing="8"
-                                                                      Padding="0,0,0,6">
-                                                                    <Label Text="Seri / Lot"
-                                                                           FontAttributes="Bold"
-                                                                           FontSize="12"
-                                                                           TextColor="#475569" />
-                                                                    <Label Grid.Column="1"
-                                                                           Text="UBB"
-                                                                           FontAttributes="Bold"
-                                                                           FontSize="12"
-                                                                           TextColor="#475569" />
-                                                                    <Label Grid.Column="2"
-                                                                           Text="SKT"
-                                                                           FontAttributes="Bold"
-                                                                           FontSize="12"
-                                                                           TextColor="#475569" />
-                                                                    <Label Grid.Column="3"
-                                                                           Text="İşlemler"
-                                                                           FontAttributes="Bold"
-                                                                           FontSize="12"
-                                                                           TextColor="#475569"
-                                                                           HorizontalTextAlignment="End" />
-                                                                </Grid>
-                                                                <!-- ItemTemplate -->
+                                                                <BindableLayout.HeaderTemplate>
+                                                                    <DataTemplate>
+                                                                        <Grid ColumnDefinitions="2*,*,*,Auto"
+                                                                              ColumnSpacing="8"
+                                                                              Padding="0,0,0,6">
+                                                                            <Label Text="Seri / Lot"
+                                                                                   FontAttributes="Bold"
+                                                                                   FontSize="12"
+                                                                                   TextColor="#475569" />
+                                                                            <Label Grid.Column="1"
+                                                                                   Text="UBB"
+                                                                                   FontAttributes="Bold"
+                                                                                   FontSize="12"
+                                                                                   TextColor="#475569" />
+                                                                            <Label Grid.Column="2"
+                                                                                   Text="SKT"
+                                                                                   FontAttributes="Bold"
+                                                                                   FontSize="12"
+                                                                                   TextColor="#475569" />
+                                                                            <Label Grid.Column="3"
+                                                                                   Text="İşlemler"
+                                                                                   FontAttributes="Bold"
+                                                                                   FontSize="12"
+                                                                                   TextColor="#475569"
+                                                                                   HorizontalTextAlignment="End" />
+                                                                        </Grid>
+                                                                    </DataTemplate>
+                                                                </BindableLayout.HeaderTemplate>
                                                                 <BindableLayout.ItemTemplate>
                                                                     <DataTemplate x:DataType="models:StockItem">
                                                                         <VerticalStackLayout Spacing="6">

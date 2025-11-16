@@ -6,7 +6,11 @@
 
     <Style TargetType="Border">
         <Setter Property="Stroke" Value="Transparent" />
-        <Setter Property="StrokeShape" Value="RoundRectangle 20" />
+        <Setter Property="StrokeShape">
+            <Setter.Value>
+                <RoundRectangle CornerRadius="20" />
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="ScrollView">

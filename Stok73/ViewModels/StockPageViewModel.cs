@@ -18,6 +18,7 @@ namespace Stok73.ViewModels;
 public partial class StockPageViewModel : ObservableObject
 {
     private readonly List<StockItem> _allItems = new();
+    private bool _isInitialized;
 
     public ObservableCollection<FilterOption> Filters { get; } = new();
 
@@ -61,8 +62,23 @@ public partial class StockPageViewModel : ObservableObject
     public StockPageViewModel()
     {
         LoadFilters();
-        LoadSampleStock();
-        ApplyFilters();
+    }
+
+    public async Task InitializeAsync()
+    {
+        if (_isInitialized)
+        {
+            return;
+        }
+
+        _isInitialized = true;
+
+        var loadedFromExcel = await LoadStockFromExcelAsync(showAlerts: false);
+
+        if (!loadedFromExcel)
+        {
+            LoadSampleStock();
+        }
     }
 
     partial void OnSearchTextChanged(string value)
@@ -197,14 +213,23 @@ public partial class StockPageViewModel : ObservableObject
     {
         IsMenuVisible = false;
 
+        await LoadStockFromExcelAsync(showAlerts: true);
+    }
+
+    private async Task<bool> LoadStockFromExcelAsync(bool showAlerts)
+    {
         try
         {
             await using var stream = await TryOpenExcelStreamAsync();
 
             if (stream is null)
             {
-                await Shell.Current?.DisplayAlert("Bilgi", "stok.xlsx dosyası bulunamadı. Lütfen dosyayı Resimler klasörüne ekleyin.", "Tamam");
-                return;
+                if (showAlerts && Shell.Current is not null)
+                {
+                    await Shell.Current.DisplayAlert("Bilgi", "stok.xlsx dosyası bulunamadı. Lütfen dosyayı Resimler klasörüne ekleyin.", "Tamam");
+                }
+
+                return false;
             }
 
             using var workbook = new XLWorkbook(stream);
@@ -212,56 +237,52 @@ public partial class StockPageViewModel : ObservableObject
 
             if (worksheet is null)
             {
-                await Shell.Current?.DisplayAlert("Hata", "Excel sayfası okunamadı.", "Tamam");
-                return;
-            }
-
-            var headers = worksheet.Row(1).Cells().ToDictionary(cell => cell.GetString().Trim(), cell => cell.Address.ColumnNumber, StringComparer.OrdinalIgnoreCase);
-
-            if (!headers.ContainsKey("materialname"))
-            {
-                await Shell.Current?.DisplayAlert("Hata", "Excel dosyasında MaterialName sütunu bulunamadı.", "Tamam");
-                return;
-            }
-
-            var importedItems = new List<StockItem>();
-
-            foreach (var row in worksheet.RowsUsed().Skip(1))
-            {
-                var materialName = row.Cell(headers["materialname"]).GetString();
-
-                if (string.IsNullOrWhiteSpace(materialName))
+                if (showAlerts && Shell.Current is not null)
                 {
-                    continue;
+                    await Shell.Current.DisplayAlert("Hata", "Excel sayfası okunamadı.", "Tamam");
                 }
 
-                var serial = GetCellValue(row, headers, "seriallotnumber");
-                var ubb = GetCellValue(row, headers, "ubbcode");
-                var expiry = GetDateValue(row, headers, "expirydate");
-                var quantity = GetIntValue(row, headers, "quantity");
-                var location = GetCellValue(row, headers, "location", "Depo");
-                var categoryKey = GetCellValue(row, headers, "categorykey", "lead");
-                var categoryName = GetCellValue(row, headers, "categoryname", "Kategori");
-                var manufacturer = GetCellValue(row, headers, "manufacturer", "Üretici");
-
-                importedItems.Add(new StockItem(Guid.NewGuid().ToString(), materialName, serial, ubb, expiry, quantity, location, categoryKey, categoryName, manufacturer));
+                return false;
             }
+
+            var importedItems = ParseWorksheet(worksheet);
 
             if (importedItems.Count == 0)
             {
-                await Shell.Current?.DisplayAlert("Bilgi", "Excel dosyasında aktarılabilir satır bulunamadı.", "Tamam");
-                return;
+                if (showAlerts && Shell.Current is not null)
+                {
+                    await Shell.Current.DisplayAlert("Bilgi", "Excel dosyasında aktarılabilir satır bulunamadı.", "Tamam");
+                }
+
+                return false;
             }
 
-            _allItems.Clear();
-            _allItems.AddRange(importedItems);
-            ApplyFilters();
+            ReplaceItems(importedItems);
 
-            await Shell.Current?.DisplayAlert("Bilgi", $"{importedItems.Count} satır stok listesine aktarıldı.", "Tamam");
+            if (showAlerts && Shell.Current is not null)
+            {
+                await Shell.Current.DisplayAlert("Bilgi", $"{importedItems.Count} satır stok listesine aktarıldı.", "Tamam");
+            }
+
+            return true;
+        }
+        catch (InvalidDataException ex)
+        {
+            if (showAlerts && Shell.Current is not null)
+            {
+                await Shell.Current.DisplayAlert("Hata", ex.Message, "Tamam");
+            }
+
+            return false;
         }
         catch (Exception ex)
         {
-            await Shell.Current?.DisplayAlert("Hata", $"Excel içe aktarma hatası: {ex.Message}", "Tamam");
+            if (showAlerts && Shell.Current is not null)
+            {
+                await Shell.Current.DisplayAlert("Hata", $"Excel içe aktarma hatası: {ex.Message}", "Tamam");
+            }
+
+            return false;
         }
     }
 
@@ -323,9 +344,7 @@ public partial class StockPageViewModel : ObservableObject
 
     private void LoadSampleStock()
     {
-        _allItems.Clear();
-
-        _allItems.AddRange(new[]
+        var fallbackItems = new[]
         {
             new StockItem("1", "Solia S53", "SN-10234", "1234567890123", DateTime.Today.AddMonths(8), 6, "Depo A", "lead", "Kalp Pili Lead", "Biotronik"),
             new StockItem("2", "Solia S60", "SN-10256", "1234567890456", DateTime.Today.AddMonths(4), 4, "Depo A", "lead", "Kalp Pili Lead", "Biotronik"),
@@ -337,7 +356,9 @@ public partial class StockPageViewModel : ObservableObject
             new StockItem("8", "Sentus OTW QP L", "SN-50912", "9876543210876", DateTime.Today.AddMonths(1), 2, "Depo D", "crt", "CRT Lead", "Biotronik"),
             new StockItem("9", "Li-7 Sheath", "SN-60256", "4567891230123", DateTime.Today.AddMonths(5), 7, "Depo B", "sheath", "Sheath", "Lifeline"),
             new StockItem("10", "Enitra 8 DR-T", "SN-70982", "4567891230456", DateTime.Today.AddMonths(9), 4, "Depo C", "icd", "ICD", "Biotronik"),
-        });
+        };
+
+        ReplaceItems(fallbackItems);
     }
 
     private void ApplyFilters()
@@ -394,6 +415,52 @@ public partial class StockPageViewModel : ObservableObject
 
         UpdateDeviceSummaries(filtered);
         UpdateFilterButtonVisual();
+    }
+
+    private void ReplaceItems(IEnumerable<StockItem> items)
+    {
+        _allItems.Clear();
+        _allItems.AddRange(items);
+        ApplyFilters();
+    }
+
+    private static List<StockItem> ParseWorksheet(IXLWorksheet worksheet)
+    {
+        var headers = worksheet
+            .Row(1)
+            .Cells()
+            .Where(cell => !string.IsNullOrWhiteSpace(cell.GetString()))
+            .ToDictionary(cell => cell.GetString().Trim(), cell => cell.Address.ColumnNumber, StringComparer.OrdinalIgnoreCase);
+
+        if (!headers.ContainsKey("materialname"))
+        {
+            throw new InvalidDataException("Excel dosyasında MaterialName sütunu bulunamadı.");
+        }
+
+        var importedItems = new List<StockItem>();
+
+        foreach (var row in worksheet.RowsUsed().Skip(1))
+        {
+            var materialName = GetCellValue(row, headers, "materialname");
+
+            if (string.IsNullOrWhiteSpace(materialName))
+            {
+                continue;
+            }
+
+            var serial = GetCellValue(row, headers, "seriallotnumber");
+            var ubb = GetCellValue(row, headers, "ubbcode");
+            var expiry = GetDateValue(row, headers, "expirydate");
+            var quantity = GetIntValue(row, headers, "quantity");
+            var location = GetCellValue(row, headers, "location", "Depo");
+            var categoryKey = GetCellValue(row, headers, "categorykey", "lead");
+            var categoryName = GetCellValue(row, headers, "categoryname", "Kategori");
+            var manufacturer = GetCellValue(row, headers, "manufacturer", "Üretici");
+
+            importedItems.Add(new StockItem(Guid.NewGuid().ToString(), materialName, serial, ubb, expiry, quantity, location, categoryKey, categoryName, manufacturer));
+        }
+
+        return importedItems;
     }
 
     private static bool MatchesSearch(StockItem item, string? search)
