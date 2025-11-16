@@ -1,0 +1,6 @@
+**/bin/
+**/obj/
+*.user
+.vs/
+node_modules/
+Kaynak/node_modules/
